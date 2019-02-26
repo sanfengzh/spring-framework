@@ -56,6 +56,7 @@ public interface Resource extends InputStreamSource {
 	 * <p>This method performs a definitive existence check, whereas the
 	 * existence of a {@code Resource} handle only guarantees a valid
 	 * descriptor handle.
+	 *
 	 * 检查resource是否真实存在
 	 */
 	boolean exists();
@@ -68,6 +69,7 @@ public interface Resource extends InputStreamSource {
 	 * However, a value of {@code false} is a definitive indication
 	 * that the resource content cannot be read.
 	 * @see #getInputStream()
+	 *
 	 * resource是否可读取
 	 */
 	default boolean isReadable() {
@@ -92,6 +94,7 @@ public interface Resource extends InputStreamSource {
 	 * <p>This is conservatively {@code false} by default.
 	 * @since 5.0
 	 * @see #getFile()
+	 *
 	 * resource是否是一个File
 	 */
 	default boolean isFile() {
@@ -111,6 +114,7 @@ public interface Resource extends InputStreamSource {
 	 * @throws IOException if the resource cannot be resolved as URI,
 	 * i.e. if the resource is not available as descriptor
 	 * @since 2.5
+	 *
 	 * 返回resource的URL的句柄
 	 */
 	URI getURI() throws IOException;
