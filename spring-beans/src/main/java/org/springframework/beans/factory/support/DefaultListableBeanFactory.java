@@ -918,6 +918,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							"] with [" + beanDefinition + "]");
 				}
 			}
+			// 把 beanDefinition 以 beanName为 key 放到一个 ConcurrentHashMap中
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 		}
 		else {

@@ -237,26 +237,32 @@ public abstract class ClassUtils {
 			throws ClassNotFoundException, LinkageError {
 
 		Assert.notNull(name, "Name must not be null");
-
+		// 从本类的primitiveTypeNameMap取，如果已经缓存过，就直接取出来
 		Class<?> clazz = resolvePrimitiveClassName(name);
 		if (clazz == null) {
+			// 如果上边没取到，再从 commonClassCache 取
 			clazz = commonClassCache.get(name);
 		}
+		// 取到了 直接返回
 		if (clazz != null) {
 			return clazz;
 		}
-
+		// 如果最终还是没取到，继续下面的逻辑
 		// "java.lang.String[]" style arrays
+		// 如果name以 "[]"结尾 如"java.lang.String[]"
 		if (name.endsWith(ARRAY_SUFFIX)) {
 			String elementClassName = name.substring(0, name.length() - ARRAY_SUFFIX.length());
 			Class<?> elementClass = forName(elementClassName, classLoader);
+			// 返回一个那个类型的数组
 			return Array.newInstance(elementClass, 0).getClass();
 		}
 
 		// "[Ljava.lang.String;" style arrays
+		// 如果name 以 "[L" 开头，以 ";" 结尾   如"[Ljava.lang.String;"
 		if (name.startsWith(NON_PRIMITIVE_ARRAY_PREFIX) && name.endsWith(";")) {
 			String elementName = name.substring(NON_PRIMITIVE_ARRAY_PREFIX.length(), name.length() - 1);
 			Class<?> elementClass = forName(elementName, classLoader);
+			// 返回一个那个类型的数组
 			return Array.newInstance(elementClass, 0).getClass();
 		}
 
@@ -272,14 +278,18 @@ public abstract class ClassUtils {
 			clToUse = getDefaultClassLoader();
 		}
 		try {
+			// 如果不是上面集中数组的情况，就返回 name对应的 Class
 			return Class.forName(name, false, clToUse);
 		}
 		catch (ClassNotFoundException ex) {
+			// 如果异常了，name中有包分隔符 "."
 			int lastDotIndex = name.lastIndexOf(PACKAGE_SEPARATOR);
 			if (lastDotIndex != -1) {
+				// 截串，这种情况可能是配置中类名前面多了一个点
 				String innerClassName =
 						name.substring(0, lastDotIndex) + INNER_CLASS_SEPARATOR + name.substring(lastDotIndex + 1);
 				try {
+					// 再试一次
 					return Class.forName(innerClassName, false, clToUse);
 				}
 				catch (ClassNotFoundException ex2) {

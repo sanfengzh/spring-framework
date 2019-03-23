@@ -51,6 +51,7 @@ public class FileSystemResourceLoader extends DefaultResourceLoader {
 		if (path.startsWith("/")) {
 			path = path.substring(1);
 		}
+		// FileSystemContextResource是FileSystemResoureLoader的内部类，继承了FileSystemResourc
 		return new FileSystemContextResource(path);
 	}
 
