@@ -104,6 +104,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 	 * resolution rules. It may therefore also override any default rules.
 	 * @since 4.3
 	 * @see #getProtocolResolvers()
+	 * 注册给定的解析器
 	 */
 	public void addProtocolResolver(ProtocolResolver resolver) {
 		Assert.notNull(resolver, "ProtocolResolver must not be null");
@@ -145,26 +146,33 @@ public class DefaultResourceLoader implements ResourceLoader {
 		Assert.notNull(location, "Location must not be null");
 
 		for (ProtocolResolver protocolResolver : this.protocolResolvers) {
+			// 通过ProtocolResolver加载资源，如果成功了就返回resource
 			Resource resource = protocolResolver.resolve(location, this);
 			if (resource != null) {
 				return resource;
 			}
 		}
-
+		// 不然就判断下路径是不是 / 开头的
 		if (location.startsWith("/")) {
+			// 如果是就从path加载资源
 			return getResourceByPath(location);
 		}
+		// 如果是 classpath 开头的
 		else if (location.startsWith(CLASSPATH_URL_PREFIX)) {
+			// 就构造一个 CalssPathResource 返回，ClassLoader 是当前的 ClassLoader
 			return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
 		}
 		else {
 			try {
 				// Try to parse the location as a URL...
+				// 在不然就使用给定的路径构造URL
 				URL url = new URL(location);
+				// 如果是一个File就构造一个FileUrlResource，不然就构造一个UrlResource
 				return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));
 			}
 			catch (MalformedURLException ex) {
 				// No URL -> resolve as resource path.
+				// 在不然就委托给getResourceBayPath实现资源加载
 				return getResourceByPath(location);
 			}
 		}

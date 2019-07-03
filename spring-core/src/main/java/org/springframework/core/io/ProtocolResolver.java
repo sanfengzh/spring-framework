@@ -39,6 +39,7 @@ public interface ProtocolResolver {
 	 * @param resourceLoader the associated resource loader
 	 * @return a corresponding {@code Resource} handle if the given location
 	 * matches this resolver's protocol, or {@code null} otherwise
+	 * 针对给定的 resourceLoader 解析给定的路径，返回解析的Resource
 	 */
 	@Nullable
 	Resource resolve(String location, ResourceLoader resourceLoader);
