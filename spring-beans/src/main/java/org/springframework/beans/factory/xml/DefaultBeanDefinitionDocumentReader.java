@@ -146,7 +146,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 		// 解析前处理，空实现，交由子类实现
 		preProcessXml(root);
-		// 解析
+		// **划重点** 解析
 		parseBeanDefinitions(root, this.delegate);
 		// 解析后处理，空实现，交由子类实现
 		postProcessXml(root);
@@ -166,6 +166,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * Parse the elements at the root level in the document:
 	 * "import", "alias", "bean".
 	 * @param root the DOM root element of the document
+	 *
+	 * 解析文档中根级别的元素（"import", "alias", "bean"）
 	 */
 	protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
 		if (delegate.isDefaultNamespace(root)) {
@@ -243,7 +245,6 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		boolean absoluteLocation = false;
 		try {
 			// 以classpath*: 或者 classpath:开头，能够通过localtion构建出java.net.URL，判断为绝对路径
-
 			absoluteLocation = ResourcePatternUtils.isUrl(location) || ResourceUtils.toURI(location).isAbsolute();
 		}
 		catch (URISyntaxException ex) {
