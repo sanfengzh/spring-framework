@@ -791,11 +791,14 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
 			throws BeanDefinitionStoreException {
 
+		// 校验beanname不能是空
 		Assert.hasText(beanName, "Bean name must not be empty");
+		// 校验beanDefinition不能是null
 		Assert.notNull(beanDefinition, "BeanDefinition must not be null");
 
 		if (beanDefinition instanceof AbstractBeanDefinition) {
 			try {
+				// 校验beanDefinition 校验 method-overrides
 				((AbstractBeanDefinition) beanDefinition).validate();
 			}
 			catch (BeanDefinitionValidationException ex) {
@@ -804,8 +807,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 		}
 
+		// 从缓存获取beanName对应的BeanDefinition
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
 		if (existingDefinition != null) {
+			// 如果缓存中存在这个BeanDefinition 且 不允许覆盖  抛异常
 			if (!isAllowBeanDefinitionOverriding()) {
 				throw new BeanDefinitionStoreException(beanDefinition.getResourceDescription(), beanName,
 						"Cannot register bean definition [" + beanDefinition + "] for bean '" + beanName +
@@ -820,6 +825,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				}
 			}
 			else if (!beanDefinition.equals(existingDefinition)) {
+				// 缓存中的BeanDefinition 和 当前的BeanDefiniton 不是同一个
 				if (logger.isInfoEnabled()) {
 					logger.info("Overriding bean definition for bean '" + beanName +
 							"' with a different definition: replacing [" + existingDefinition +
@@ -833,11 +839,15 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							"] with [" + beanDefinition + "]");
 				}
 			}
+			// 把当前的BeanDefiniton放入缓存中，覆盖掉缓存中旧的
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 		}
 		else {
+			// 缓存中不存在这个beanName对应的BeanDefiniton
+			// 检查是否 bean创建已经开始
 			if (hasBeanCreationStarted()) {
 				// Cannot modify startup-time collection elements anymore (for stable iteration)
+				// 如果已经到开始创建bean的阶段，加个锁，避免并发， 这里注意下加锁，beanDefinitionMap是一个ConcurrentHashMap,这个方法中除了put还有get方法被调用，而且beanDefinitionMap是一个全局变量，在其他地方可能使用其get方法，所以如果不加锁，则get和put仍有可能产生并发问题
 				synchronized (this.beanDefinitionMap) {
 					this.beanDefinitionMap.put(beanName, beanDefinition);
 					List<String> updatedDefinitions = new ArrayList<>(this.beanDefinitionNames.size() + 1);
@@ -853,6 +863,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 			else {
 				// Still in startup registration phase
+				// 仍在注册启动阶段，不会并发，因为只会调用put方法
 				this.beanDefinitionMap.put(beanName, beanDefinition);
 				this.beanDefinitionNames.add(beanName);
 				this.manualSingletonNames.remove(beanName);
@@ -861,6 +872,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 
 		if (existingDefinition != null || containsSingleton(beanName)) {
+			// 重设beanName对应的缓存
 			resetBeanDefinition(beanName);
 		}
 	}
