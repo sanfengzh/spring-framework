@@ -209,6 +209,7 @@ public class PropertyPlaceholderConfigurer extends PlaceholderConfigurerSupport 
 	protected void processProperties(ConfigurableListableBeanFactory beanFactoryToProcess, Properties props)
 			throws BeansException {
 
+		// 构造一个 PlaceholderResolvingStringValueResolver 类型的 StringValueResolver 实例，这是一个解析Sring类型的策略接口，这个接口提供了 resolveStringValue() 方法用于解析String值
 		StringValueResolver valueResolver = new PlaceholderResolvingStringValueResolver(props);
 		doProcessProperties(beanFactoryToProcess, valueResolver);
 	}
@@ -221,6 +222,10 @@ public class PropertyPlaceholderConfigurer extends PlaceholderConfigurerSupport 
 		private final PlaceholderResolver resolver;
 
 		public PlaceholderResolvingStringValueResolver(Properties props) {
+			// 构造PropertyPlaceholderHelper
+			// 传入的参数 placeholderPrefix="${"
+			//			 placeholderSuffix="}"
+			// 			 valueSeparator=":"
 			this.helper = new PropertyPlaceholderHelper(
 					placeholderPrefix, placeholderSuffix, valueSeparator, ignoreUnresolvablePlaceholders);
 			this.resolver = new PropertyPlaceholderConfigurerResolver(props);
@@ -229,6 +234,7 @@ public class PropertyPlaceholderConfigurer extends PlaceholderConfigurerSupport 
 		@Override
 		@Nullable
 		public String resolveStringValue(String strVal) throws BeansException {
+			// 这里的 helper 就是 构造器中new的helper，也就是PropertyPlaceholderHelper类型的实例，构造实例是传入了prefix="${" suffix="}" separator=":"
 			String resolved = this.helper.replacePlaceholders(strVal, this.resolver);
 			if (trimValues) {
 				resolved = resolved.trim();

@@ -82,6 +82,7 @@ public class BeanDefinitionVisitor {
 		visitFactoryMethodName(beanDefinition);
 		visitScope(beanDefinition);
 		if (beanDefinition.hasPropertyValues()) {
+			// 访问属性
 			visitPropertyValues(beanDefinition.getPropertyValues());
 		}
 		if (beanDefinition.hasConstructorArgumentValues()) {
@@ -143,9 +144,12 @@ public class BeanDefinitionVisitor {
 
 	protected void visitPropertyValues(MutablePropertyValues pvs) {
 		PropertyValue[] pvArray = pvs.getPropertyValues();
+		// 遍历所有属性
 		for (PropertyValue pv : pvArray) {
+			// 获取到属性的新值
 			Object newVal = resolveValue(pv.getValue());
 			if (!ObjectUtils.nullSafeEquals(newVal, pv.getValue())) {
+				// 如果旧值和新值不同，用新值替换旧值
 				pvs.add(pv.getName(), newVal);
 			}
 		}
@@ -218,6 +222,7 @@ public class BeanDefinitionVisitor {
 				typedStringValue.setValue(visitedString);
 			}
 		}
+		// 这里是处理String 的
 		else if (value instanceof String) {
 			return resolveStringValue((String) value);
 		}

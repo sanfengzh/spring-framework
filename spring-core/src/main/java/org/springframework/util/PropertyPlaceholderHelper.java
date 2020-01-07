@@ -129,10 +129,13 @@ public class PropertyPlaceholderHelper {
 
 		StringBuilder result = new StringBuilder(value);
 
+		// 获取前缀 "${" 的索引位置
 		int startIndex = value.indexOf(this.placeholderPrefix);
 		while (startIndex != -1) {
+			// 获取后缀 "}" 的索引位置
 			int endIndex = findPlaceholderEndIndex(result, startIndex);
 			if (endIndex != -1) {
+				// 截取 "${" 和 "}" 中间的内容，就是配置文件中对应的值
 				String placeholder = result.substring(startIndex + this.placeholderPrefix.length(), endIndex);
 				String originalPlaceholder = placeholder;
 				if (!visitedPlaceholders.add(originalPlaceholder)) {
@@ -140,16 +143,25 @@ public class PropertyPlaceholderHelper {
 							"Circular placeholder reference '" + originalPlaceholder + "' in property definitions");
 				}
 				// Recursive invocation, parsing placeholders contained in the placeholder key.
+				// 解析占位符键中包含的占位符，真正的值
 				placeholder = parseStringValue(placeholder, placeholderResolver, visitedPlaceholders);
 				// Now obtain the value for the fully resolved key...
+				// 从 Properties 中获取 placeholder 对应的值 propVal
 				String propVal = placeholderResolver.resolvePlaceholder(placeholder);
+				// 如果不存在
 				if (propVal == null && this.valueSeparator != null) {
+					// 查询 ":" 的索引位置
 					int separatorIndex = placeholder.indexOf(this.valueSeparator);
+					// 如果存在
 					if (separatorIndex != -1) {
+						// 获取 ":" 前面的部分
 						String actualPlaceholder = placeholder.substring(0, separatorIndex);
+						// 获取 ":" 后面的部分
 						String defaultValue = placeholder.substring(separatorIndex + this.valueSeparator.length());
+						// 从 Properties 中获取actualPlaceholder对应的值
 						propVal = placeholderResolver.resolvePlaceholder(actualPlaceholder);
 						if (propVal == null) {
+							// 如果不存在就返回 defaultValue
 							propVal = defaultValue;
 						}
 					}
@@ -166,6 +178,7 @@ public class PropertyPlaceholderHelper {
 				}
 				else if (this.ignoreUnresolvablePlaceholders) {
 					// Proceed with unprocessed value.
+					// 忽略值
 					startIndex = result.indexOf(this.placeholderPrefix, endIndex + this.placeholderSuffix.length());
 				}
 				else {
@@ -179,6 +192,7 @@ public class PropertyPlaceholderHelper {
 			}
 		}
 
+		// 返回propVal,就是替换之后的值
 		return result.toString();
 	}
 

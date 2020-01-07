@@ -165,6 +165,7 @@ public class MutablePropertyValues implements PropertyValues, Serializable {
 	 */
 	public MutablePropertyValues addPropertyValue(PropertyValue pv) {
 		for (int i = 0; i < this.propertyValueList.size(); i++) {
+			// PropertyValue用来保存一组bean属性的信息和值的对象
 			PropertyValue currentPv = this.propertyValueList.get(i);
 			if (currentPv.getName().equals(pv.getName())) {
 				pv = mergeIfRequired(pv, currentPv);

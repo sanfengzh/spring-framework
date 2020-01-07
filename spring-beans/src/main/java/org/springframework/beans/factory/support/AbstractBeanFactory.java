@@ -239,12 +239,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
 			@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
 
-		// 获取beanName
+		// 获取beanName,这里是一个转换动作，将name转换为beanName
 		final String beanName = transformedBeanName(name);
 		Object bean;
 
 		// Eagerly check singleton cache for manually registered singletons.
 		// 从缓存或实例工厂获取bean,单例bean只会创建一次，以后都是从单例缓存取
+		// 这里会涉及到解决循环依赖的问题
 		Object sharedInstance = getSingleton(beanName);
 		if (sharedInstance != null && args == null) {
 			if (logger.isDebugEnabled()) {
@@ -264,6 +265,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.
 			// 如果当前要创建的bean已经被在原型模式下创建过了，那这里多半是产生了循环依赖，会抛出异常
+			// spring只会解决单例模式下的循环依赖，圆形模式下会抛出BeanCurrentlyInCreationException异常
 			if (isPrototypeCurrentlyInCreation(beanName)) {
 				throw new BeanCurrentlyInCreationException(beanName);
 			}

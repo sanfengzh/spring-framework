@@ -47,12 +47,20 @@ public interface BeanFactoryPostProcessor {
 
 	/**
 	 * Modify the application context's internal bean factory after its standard
-	 * initialization. All bean definitions will have been loaded, but no beans
+	 * initialization.
+	 * 表示了该方法的作用：在 standard initialization（实在是不知道这个怎么翻译：标准初始化？） 之后（已经就是已经完成了 BeanDefinition 的加载）对 bean factory 容器进行修改。其中参数 beanFactory 应该就是已经完成了 standard initialization 的 BeanFactory
+	 *
+	 * All bean definitions will have been loaded, but no beans
 	 * will have been instantiated yet. This allows for overriding or adding
 	 * properties even to eager-initializing beans.
+	 * 表示作用时机：所有的 BeanDefinition 已经完成了加载即加载至 BeanFactory 中，但是还没有完成初始化
+	 *
 	 * @param beanFactory the bean factory used by the application context
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */
+	// postProcessBeanFactory() 工作与 BeanDefiniton 加载完成之后， Bean实例化之前，主要作用是对 BeanDefinition 进行修改
+	// 注意在 postProcessBeanFactory() 中千万不要进行Bean 的实例化工作，这样会导致 bean 过早实例化
+	// BeanFactoryPostProcessor 是与 BeanDefiniton 打交道的，如果需要与 Bean 打交道应使用 BeanPostProcessor
 	void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException;
 
 }
