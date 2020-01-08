@@ -1689,6 +1689,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				boolean convertible = bw.isWritableProperty(propertyName) &&
 						!PropertyAccessorUtils.isNestedOrIndexedProperty(propertyName);
 				if (convertible) {
+					// 属性类型转换，配置中都是String，转换为属性真正定义的类型
 					convertedValue = convertForProperty(resolvedValue, propertyName, bw, converter);
 				}
 				// Possibly store converted value in merged bean definition,
@@ -1733,11 +1734,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			@Nullable Object value, String propertyName, BeanWrapper bw, TypeConverter converter) {
 
 		if (converter instanceof BeanWrapperImpl) {
+			// 如果是BeanWrapperImpl类型，就用BeanWrapperImpl来进行类型转换
 			return ((BeanWrapperImpl) converter).convertForProperty(value, propertyName);
 		}
 		else {
+			// 否则就用TypeConverter.convertIfNecessary进行转换
 			PropertyDescriptor pd = bw.getPropertyDescriptor(propertyName);
 			MethodParameter methodParam = BeanUtils.getWriteMethodParameter(pd);
+			// TypeConverter的两个实现类DataBinder和TypeConverterSupport。 DataBinder主要用于参数绑定，TypeConverterSupport是TypeConverter的基本实现
 			return converter.convertIfNecessary(value, pd.getPropertyType(), methodParam);
 		}
 	}

@@ -138,12 +138,14 @@ public class PropertyPlaceholderHelper {
 				// 截取 "${" 和 "}" 中间的内容，就是配置文件中对应的值
 				String placeholder = result.substring(startIndex + this.placeholderPrefix.length(), endIndex);
 				String originalPlaceholder = placeholder;
+				// 循环占位符
+				// 判断该占位符是否已经处理了
 				if (!visitedPlaceholders.add(originalPlaceholder)) {
 					throw new IllegalArgumentException(
 							"Circular placeholder reference '" + originalPlaceholder + "' in property definitions");
 				}
 				// Recursive invocation, parsing placeholders contained in the placeholder key.
-				// 解析占位符键中包含的占位符，真正的值
+				// 解析占位符键中包含的占位符，真正的值，递归调用
 				placeholder = parseStringValue(placeholder, placeholderResolver, visitedPlaceholders);
 				// Now obtain the value for the fully resolved key...
 				// 从 Properties 中获取 placeholder 对应的值 propVal
@@ -169,6 +171,7 @@ public class PropertyPlaceholderHelper {
 				if (propVal != null) {
 					// Recursive invocation, parsing placeholders contained in the
 					// previously resolved placeholder value.
+					// 递归调用，解析先前解析的占位符值中包含的占位符
 					propVal = parseStringValue(propVal, placeholderResolver, visitedPlaceholders);
 					result.replace(startIndex, endIndex + this.placeholderSuffix.length(), propVal);
 					if (logger.isTraceEnabled()) {

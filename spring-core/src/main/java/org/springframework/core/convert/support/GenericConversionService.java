@@ -252,17 +252,21 @@ public class GenericConversionService implements ConfigurableConversionService {
 	@Nullable
 	protected GenericConverter getConverter(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		ConverterCacheKey key = new ConverterCacheKey(sourceType, targetType);
+		// 从converterCache缓存中获取
 		GenericConverter converter = this.converterCache.get(key);
 		if (converter != null) {
+			// 如果能从缓存获取到，就返回
 			return (converter != NO_MATCH ? converter : null);
 		}
 
+		// 从converterCache缓存中获取不到，从converters获取
 		converter = this.converters.find(sourceType, targetType);
 		if (converter == null) {
 			converter = getDefaultConverter(sourceType, targetType);
 		}
 
 		if (converter != null) {
+			// 然后加入到converterCache缓存中
 			this.converterCache.put(key, converter);
 			return converter;
 		}

@@ -158,6 +158,7 @@ class TypeConverterDelegate {
 		ConversionFailedException conversionAttemptEx = null;
 
 		// No custom editor but custom ConversionService specified?
+		// 如果没有自定义的编辑器，则使用ConversionService。ConversionService是Spring自3以后推出用来替代 PropertyEditor 转换模式的转换体系
 		ConversionService conversionService = this.propertyEditorRegistry.getConversionService();
 		if (editor == null && conversionService != null && newValue != null && typeDescriptor != null) {
 			TypeDescriptor sourceTypeDesc = TypeDescriptor.forObject(newValue);
