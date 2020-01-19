@@ -35,6 +35,7 @@ import org.springframework.util.ObjectUtils;
  * @author Juergen Hoeller
  * @see org.springframework.aop.framework.AdvisedSupport#setTarget(Object)
  */
+// TargetSource 的默认实现类
 public class SingletonTargetSource implements TargetSource, Serializable {
 
 	/** use serialVersionUID from Spring 1.2 for interoperability */
@@ -42,6 +43,7 @@ public class SingletonTargetSource implements TargetSource, Serializable {
 
 
 	/** Target cached and invoked using reflection */
+	// 用来保存目标类
 	private final Object target;
 
 
@@ -55,21 +57,25 @@ public class SingletonTargetSource implements TargetSource, Serializable {
 	}
 
 
+	// 返回目标类的类型
 	@Override
 	public Class<?> getTargetClass() {
 		return this.target.getClass();
 	}
 
+	// 返回目标类
 	@Override
 	public Object getTarget() {
 		return this.target;
 	}
 
+	// 释放目标类
 	@Override
 	public void releaseTarget(Object target) {
 		// nothing to do
 	}
 
+	// 是否是静态的
 	@Override
 	public boolean isStatic() {
 		return true;
@@ -85,10 +91,12 @@ public class SingletonTargetSource implements TargetSource, Serializable {
 		if (this == other) {
 			return true;
 		}
+		// 不是 SingletonTargetSource 类型，返回false
 		if (!(other instanceof SingletonTargetSource)) {
 			return false;
 		}
 		SingletonTargetSource otherTargetSource = (SingletonTargetSource) other;
+		// 比对目标类是否相等
 		return this.target.equals(otherTargetSource.target);
 	}
 
